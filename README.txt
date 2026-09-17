@@ -5,7 +5,7 @@ Setup:
   pip install -r requirements.txt
 
 Put the documents folder (from documents.zip) and stopwords.txt next to
-hw01_girishya.py, then run:
+hw01_girishya.py, then run ( this repository already has them all together but in case you wanted to use different ones):
 
   python hw01_girishya.py
 

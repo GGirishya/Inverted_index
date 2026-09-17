@@ -27,7 +27,7 @@ DOCS_DIR = "documents"       # folder with the .txt files
 STOPWORDS_FILE = "stopwords.txt"
 INDEX_FILE = "index.json"
 TOP_N = 20                   # how many top words to print
-USE_PARALLEL = True      # extra credit: True = build index with multiple processes
+USE_PARALLEL = False      # extra credit: True = build index with multiple processes
 
 stemmer = PorterStemmer()
 
@@ -37,7 +37,7 @@ def print_header():
     print("=================== CSC734-IR Homework 01 =======================")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
-    print("=============================================================")
+    print("=================================================================")
 
 
 def get_stopwords():
