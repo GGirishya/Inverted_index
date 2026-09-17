@@ -1,4 +1,5 @@
 #
+# Inverted Index Builder
 # Guillaume Girishya
 #
 # This program reads a folder of text files, cleans up the words in

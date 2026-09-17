@@ -6,6 +6,7 @@ many times. Includes text cleaning (tokenizing, stopword removal,
 stemming), index size reporting, top-term stats, save/load to JSON, and
 an optional multi-process mode.
 
+---
 ## What it does
 
 1. Reads every `.txt` file in a `documents/` folder.
@@ -18,6 +19,7 @@ an optional multi-process mode.
    across the whole collection.
 5. Saves the index to `index.json` and reloads it to confirm it round-trips.
 
+---
 ## Setup
 
 ```
@@ -44,6 +46,7 @@ All at the top of the file:
 - `USE_PARALLEL` — `True` builds the index using multiple processes
   (`multiprocessing.Pool`), `False` builds it one document at a time
 
+---
 ## Sequential vs. parallel
 
 The parallel mode splits documents across CPU cores instead of
@@ -56,6 +59,7 @@ document collection, or documents that are individually much longer to
 clean and stem. Worth remembering next time this looks tempting on a
 small dataset — measure first.
 
+---
 ## Files
 
 - `Inverted_index.py` — the whole program
