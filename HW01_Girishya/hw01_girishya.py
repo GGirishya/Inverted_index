@@ -10,6 +10,7 @@
 # multiple processes instead of one at a time.
 
 import os
+import re
 import string
 import pickle
 from multiprocessing import Pool, cpu_count

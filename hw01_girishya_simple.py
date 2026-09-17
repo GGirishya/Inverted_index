@@ -1,3 +1,5 @@
+#
+#
 # CSC734 - Homework 01
 # Guillaume Girishya
 #
@@ -10,6 +12,7 @@
 # multiple processes instead of one at a time.
 
 import os
+import re
 import string
 import json
 from multiprocessing import Pool, cpu_count
@@ -18,12 +21,12 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
-# ---- settings you can tweak ----
+# ---- Global variables----
 DOCS_DIR = "documents"       # folder with the .txt files
 STOPWORDS_FILE = "stopwords.txt"
 INDEX_FILE = "index.json"
 TOP_N = 20                   # how many top words to print
-USE_PARALLEL = False         # extra credit: True = build index with multiple processes
+USE_PARALLEL = True         # extra credit: True = build index with multiple processes
 
 stemmer = PorterStemmer()
 
@@ -67,6 +70,8 @@ def clean_text(text, stopwords):
     result = []
     for w in words:
         w = w.translate(str.maketrans("", "", string.punctuation))  # strip punctuation
+        w = re.sub(r"[^a-z0-9]", "", w)  # keep only letters/digits - drops any punctuation, symbol or stray space
+
         if w == "" or w in stopwords or w.isdigit():
             continue
         w = stemmer.stem(w)
