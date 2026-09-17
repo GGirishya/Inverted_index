@@ -37,6 +37,7 @@ def print_header():
     print("=================== CSC734-IR Homework 01 =======================")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
+    print("Git : https://github.com/GGirishya")
     print("=================================================================")
 
 
@@ -101,7 +102,7 @@ def _worker(args):
 
 
 def build_index(docs, stopwords):
-    # normal, one-at-a-time version: goes through every doc, counts its
+    # normal, one after the otherversion: goes through every doc, counts its
     # words, and merges those counts into the big index dict
     index = {}
     for doc_name, text in docs.items():
@@ -152,7 +153,7 @@ def print_top_terms(index, n):
 
 def save_index(index, path):
     # saves the index to disk as JSON so we don't have to rebuild it every
-    # time - it's plain text, so you can open the file and read it yourself
+    # time, it's plain text, so you can open the file and read it yourself
     with open(path, "w") as f:
         json.dump(index, f)
     print(f"Index saved to '{path}'.")
@@ -167,7 +168,7 @@ def load_index(path):
 
 
 def main():
-    # nltk needs these small models downloaded once to tokenize text
+    #  the nltk needs these small models downloaded once to tokenize the whole text
     nltk.download("punkt", quiet=True)
     nltk.download("punkt_tab", quiet=True)
 
