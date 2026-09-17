@@ -1,6 +1,4 @@
 #
-#
-# CSC734 - Homework 01
 # Guillaume Girishya
 #
 # This program reads a folder of text files, cleans up the words in
@@ -8,7 +6,7 @@
 # and how many times). It also prints some basic stats and saves the
 # index to a file so it can be loaded back later.
 #
-# Extra credit: set USE_PARALLEL = True below to build the index using
+# set USE_PARALLEL = True below to build the index using
 # multiple processes instead of one at a time.
 
 import os
@@ -27,14 +25,14 @@ DOCS_DIR = "documents"       # folder with the .txt files
 STOPWORDS_FILE = "stopwords.txt"
 INDEX_FILE = "index.json"
 TOP_N = 20                   # how many top words to print
-USE_PARALLEL = True      # extra credit: True = build index with multiple processes
+USE_PARALLEL = True      #True = build index with multiple processes
 
 stemmer = PorterStemmer()
 
 
 def print_header():
     # this is just the required banner with course + name info
-    print("=================== CSC734-IR Homework 01 =======================")
+    print("================================================================")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
     print("Git : https://github.com/GGirishya")
