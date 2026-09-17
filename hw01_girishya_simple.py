@@ -15,6 +15,7 @@ import os
 import re
 import string
 import json
+import time
 from multiprocessing import Pool, cpu_count
 
 import nltk
@@ -36,7 +37,7 @@ def print_header():
     print("=================== CSC734-IR Homework 01 ==============")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
-    print("================================================")
+    print("=======================================================")
 
 
 def get_stopwords():
@@ -47,11 +48,13 @@ def get_stopwords():
             line = line.strip().lower()
             if line:
                 words.add(line)
+    print(f"Loaded {len(words)} stop words from '{STOPWORDS_FILE}'.")
     return words
 
 
 def load_documents():
     # reads every .txt file in DOCS_DIR into a dict: {filename: text}
+    print(f"\nReading documents from '{DOCS_DIR}' ...")
     docs = {}
     for fname in os.listdir(DOCS_DIR):
         if not fname.endswith(".txt"):
@@ -59,6 +62,7 @@ def load_documents():
         path = os.path.join(DOCS_DIR, fname)
         with open(path, encoding="utf-8", errors="ignore") as f:
             docs[fname] = f.read()
+    print(f"Loaded {len(docs)} documents.")
     return docs
 
 
@@ -70,7 +74,7 @@ def clean_text(text, stopwords):
     result = []
     for w in words:
         w = w.translate(str.maketrans("", "", string.punctuation))  # strip punctuation
-        w = re.sub(r"[^a-z0-9]", "", w)  # keep only letters/digits - drops any punctuation, symbol or stray space
+        w = re.sub(r"[^a-z0-9]", "", w)  # keep only letters/digits and will drops any punctuation, symbol or stray space
 
         if w == "" or w in stopwords or w.isdigit():
             continue
@@ -128,7 +132,7 @@ def print_index_size(index):
     # figures out how big the index is by converting it to a JSON string
     # and checking how many bytes that string takes up
     size = len(json.dumps(index).encode("utf-8"))
-    print("Index size:", size, "bytes  (", round(size / 1024 / 1024, 4), "MB )")
+    print(f"Inverted index size: {size:,} bytes ({size / 1024 / 1024:.4f} MB)")
 
 
 def print_top_terms(index, n):
@@ -140,9 +144,10 @@ def print_top_terms(index, n):
 
     top = sorted(totals.items(), key=lambda x: x[1], reverse=True)[:n]
 
-    print("\nTop", n, "terms:")
-    for term, count in top:
-        print(term, "-", count)
+    print(f"\nTop {n} most frequent terms in the collection:")
+    print(f"{'Rank':<6}{'Term':<20}{'Frequency':>10}")
+    for rank, (term, count) in enumerate(top, start=1):
+        print(f"{rank:<6}{term:<20}{count:>10}")
 
 
 def save_index(index, path):
@@ -150,12 +155,15 @@ def save_index(index, path):
     # time - it's plain text, so you can open the file and read it yourself
     with open(path, "w") as f:
         json.dump(index, f)
+    print(f"Index saved to '{path}'.")
 
 
 def load_index(path):
     # loads a previously saved index back into memory
     with open(path) as f:
-        return json.load(f)
+        index = json.load(f)
+    print(f"Index loaded from '{path}'.")
+    return index
 
 
 def main():
@@ -165,24 +173,25 @@ def main():
 
     print_header()
 
-    stopwords = get_stopwords()
     docs = load_documents()
-    print("Loaded", len(docs), "documents")
+    stopwords = get_stopwords()
 
+    start = time.time()
     if USE_PARALLEL:
-        print("Building index in parallel...")
+        print(f"\nBuilding inverted index in PARALLEL ({cpu_count()} processes) ...")
         index = build_index_parallel(docs, stopwords)
     else:
+        print("\nBuilding inverted index sequentially ...")
         index = build_index(docs, stopwords)
-
-    print("Index has", len(index), "unique terms")
+    elapsed = time.time() - start
+    print(f"Index built with {len(index)} unique terms in {elapsed:.2f} seconds.")
 
     print_index_size(index)
     print_top_terms(index, TOP_N)
 
     save_index(index, INDEX_FILE)
     index2 = load_index(INDEX_FILE)
-    print("\nReloaded index has", len(index2), "terms - matches:", len(index2) == len(index))
+    print(f"\nVerified: reloaded index has {len(index2)} terms, matches the saved index: {len(index2) == len(index)}")
 
 
 if __name__ == "__main__":
