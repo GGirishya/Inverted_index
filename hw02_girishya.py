@@ -3,7 +3,7 @@
 # CSC734 - Homework 02
 # Guillaume Girishya
 #
-# Loads the inverted index built by hw01_girishya.py, loads a list of
+#  This program loads the inverted index built by hw01_girishya.py, loads a list of
 # search queries from a text file (up to 4 words each), and for every
 # query prints the matching documents under every possible AND/OR
 # combination between the query words.
@@ -28,16 +28,17 @@ stemmer = PorterStemmer()
 
 
 def print_header():
-    # required banner with course + name info (exact text from the
-    # assignment sheet)
-    print("=================== CSC790-IR Homework 02 ==============")
+    # this is just the required banner with course + name info
+    print("================================================================")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
-    print("=======================================================")
+    print("Git : https://github.com/GGirishya")
+    print("=================================================================")
+
 
 
 def load_index(path):
-    # loads the inverted index that hw01_girishya.py saved as JSON
+    # loads the inverted index that hw01_girishya.py saved as JSON the index.json file in the directory.
     # returns: {word: {doc_name: count}}
     with open(path) as f:
         index = json.load(f)
@@ -47,7 +48,7 @@ def load_index(path):
 
 def get_stopwords(path):
     # reads the stopword list into a set, same as hw01_girishya.py, so
-    # query words get normalized the exact same way the documents were
+    # query words get normalized the exact same way the documents were normalized when the index was built
     words = set()
     with open(path) as f:
         for line in f:
@@ -75,7 +76,7 @@ def normalize_word(word, stopwords):
 def load_queries(path):
     # reads the queries file, one query per line
     # returns a list of queries, where each query is a list of the
-    # original (un-cleaned) words typed on that line
+    # original pre-normalized words typed on that line
     queries = []
     with open(path) as f:
         for line in f:
@@ -84,7 +85,7 @@ def load_queries(path):
                 continue
             words = line.split()
             if len(words) > 4:
-                print(f"Warning: query '{line}' has more than 4 words, using the first 4.")
+                print(f"Warning: The query '{line}' has more than 4 words, only using the first 4.")
                 words = words[:4]
             queries.append(words)
     return queries
@@ -105,6 +106,8 @@ def combine(doc_sets, operators):
     # there are sets)
     # example: doc_sets = [setA, setB, setC], operators = ["and", "or"]
     #          -> (setA and setB) or setC
+    #
+    #
     result = doc_sets[0]
     for op, next_set in zip(operators, doc_sets[1:]):
         if op == "and":
@@ -142,7 +145,7 @@ def run_query(query_num, words, index, stopwords):
         return
 
     for operators in itertools.product(["and", "or"], repeat=num_gaps):
-        # build a readable label like "A and B or C"
+        # this will build a readable label like "A and B or C"
         label_parts = [words[0]]
         for op, w in zip(operators, words[1:]):
             label_parts.append(op)
