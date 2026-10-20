@@ -33,6 +33,7 @@ def print_header():
     print("=================== CSC790-IR Homework 02 ==============")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
+    print("Git : https://github.com/GGirishya")
     print("=======================================================")
 
 
