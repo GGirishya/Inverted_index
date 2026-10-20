@@ -1,24 +1,21 @@
 #
-# Inverted Index Builder
+#
+# CSC734 - Homework 02 (this file is the modified Homework 01 code)
 # Guillaume Girishya
 #
-# This program reads a folder of text files, cleans up the words in
-# each one, and builds an inverted index (word -> which docs it's in
-# and how many times). It also prints some basic stats and saves the
-# index to a file so it can be loaded back later.
+# This is the same inverted-index builder from Homework 01, updated so
+# the processing steps follow the exact order shown in the HW02 figure:
 #
-# Updated for HW02: the cleaning steps below now follow the exact
-# order shown in the HW02 figure - tokenize -> lower case -> remove
-# punctuation -> remove stopwords -> stem - instead of lower-casing
-# the whole text before tokenizing.
-# 
-# 
-# set USE_PARALLEL = True below to build the index using
+#   read documents -> tokenize -> lower case -> remove punctuation
+#   -> remove stopwords -> stemming -> create index -> index
+#
+# (You'll Never Walk Alone through a stack trace - go Reds.)
+#
+# Extra credit: set USE_PARALLEL = True below to build the index using
 # multiple processes instead of one at a time.
 
 import os
 import re
-import string
 import json
 import time
 from multiprocessing import Pool, cpu_count
@@ -28,22 +25,21 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
 # ---- Global variables----
-DOCS_DIR = "documents_big"       # folder with the .txt files
+DOCS_DIR = "documents"       # folder with the .txt files
 STOPWORDS_FILE = "stopwords.txt"
-INDEX_FILE = "index.json"
+INDEX_FILE = "index.json"    # this is the file HW02's search script loads
 TOP_N = 20                   # how many top words to print
-USE_PARALLEL = False          #True = build index with multiple processes
+USE_PARALLEL = False         # extra credit: True = build index with multiple processes
 
 stemmer = PorterStemmer()
 
 
 def print_header():
     # this is just the required banner with course + name info
-    print("================================================================")
+    print("=================== CSC734-IR Homework 02 ==============")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
-    print("Git : https://github.com/GGirishya")
-    print("=================================================================")
+    print("=======================================================")
 
 
 def get_stopwords():
@@ -59,8 +55,9 @@ def get_stopwords():
 
 
 def load_documents():
-    # reads every .txt file in DOCS_DIR into a dictoinary: {filename: text}
-    print(f"\nReading documents from '{DOCS_DIR}' .........")
+    # step 1: read documents - reads every .txt file in DOCS_DIR into a
+    # dict: {filename: text}
+    print(f"\nReading documents from '{DOCS_DIR}' ...")
     docs = {}
     for fname in os.listdir(DOCS_DIR):
         if not fname.endswith(".txt"):
@@ -73,28 +70,27 @@ def load_documents():
 
 
 def clean_text(text, stopwords):
-    # takes raw text and returns a list of clean, stemmed words:
-    # tokenize -> lowercase -> remove punctuation -> remove stopwords -> stem
-    words = word_tokenize(text)
+    # steps 2-6 from the figure, in this exact order:
+    #   tokenize -> lower case -> remove punctuation -> remove stopwords -> stemming
+    # takes the raw text of one document and returns a list of clean,
+    # stemmed words ready to go into the index
+    tokens = word_tokenize(text)  # tokenize (still original case here)
 
     result = []
-    for w in words:
-        w = w.lower() # convert to lowercase
-        w = w.translate(str.maketrans("", "", string.punctuation))  # strip punctuation
-       
-        w = re.sub(r"[^a-z0-9]", "", w)  # keep only letters and digits and will drops any punctuation, symbol or stray space
-
-        if w == "" or w in stopwords or w.isdigit():
+    for w in tokens:
+        w = w.lower()                       # lower case
+        w = re.sub(r"[^a-z0-9]", "", w)      # remove punctuation (and any other symbol)
+        if w == "" or w in stopwords or w.isdigit():   # remove stopwords (+ empty/number tokens)
             continue
-        w = stemmer.stem(w)     # stem the word
-        if w not in stopwords:
+        w = stemmer.stem(w)                  # stemming
+        if w not in stopwords:               # a stemmed word can turn into a stopword too
             result.append(w)
     return result
 
 
 def count_words(doc_name, text, stopwords):
-    # helper function: cleans one document and counts how many times each word shows up in it
-    # returns (doc_name, {word: count}) so it can be merged into the index
+    # helper: cleans one document and counts how many times each word
+    # shows up in it. returns (doc_name, {word: count})
     words = clean_text(text, stopwords)
     counts = {}
     for w in words:
@@ -109,8 +105,10 @@ def _worker(args):
 
 
 def build_index(docs, stopwords):
-    # normal, one after the otherversion: goes through every doc, counts its
-    # words, and merges those counts into the big index dict
+    # step 7/8: create index / index
+    # normal, one-at-a-time version: goes through every doc, counts its
+    # words, and merges those counts into the big index dict:
+    # {word: {doc_name: count}}
     index = {}
     for doc_name, text in docs.items():
         _, counts = count_words(doc_name, text, stopwords)
@@ -137,7 +135,7 @@ def build_index_parallel(docs, stopwords):
 
 
 def print_index_size(index):
-    # finds out how big the index is by converting it to a JSON string
+    # figures out how big the index is by converting it to a JSON string
     # and checking how many bytes that string takes up
     size = len(json.dumps(index).encode("utf-8"))
     print(f"Inverted index size: {size:,} bytes ({size / 1024 / 1024:.4f} MB)")
@@ -159,8 +157,8 @@ def print_top_terms(index, n):
 
 
 def save_index(index, path):
-    # saves the index to disk as JSON so we don't have to rebuild it every
-    # time, it's plain text, so the file can be opened and read without exrta work
+    # saves the index to disk as JSON - this is the file hw02_girishya.py
+    # loads back in to answer search queries
     with open(path, "w") as f:
         json.dump(index, f)
     print(f"Index saved to '{path}'.")
@@ -175,7 +173,7 @@ def load_index(path):
 
 
 def main():
-    #  the nltk needs these small models downloaded once to tokenize the whole text
+    # nltk needs these small models downloaded once to tokenize text
     nltk.download("punkt", quiet=True)
     nltk.download("punkt_tab", quiet=True)
 
@@ -186,10 +184,10 @@ def main():
 
     start = time.time()
     if USE_PARALLEL:
-        print(f"\nBuilding inverted index in PARALLEL ({cpu_count()} processes) ......")
+        print(f"\nBuilding inverted index in PARALLEL ({cpu_count()} processes) ...")
         index = build_index_parallel(docs, stopwords)
     else:
-        print("\nBuilding inverted index sequentially .......")
+        print("\nBuilding inverted index sequentially ...")
         index = build_index(docs, stopwords)
     elapsed = time.time() - start
     print(f"Index built with {len(index)} unique terms in {elapsed:.2f} seconds.")
@@ -204,3 +202,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
