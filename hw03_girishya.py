@@ -1,7 +1,14 @@
 # CSC734 - Homework 03
 # Guillaume Girishya
-# Compare documents using TF, TF-IDF, and sublinear TF-IDF.
-
+# Comparing documents using TF, TF-IDF, and sublinear TF-IDF.
+# 
+# How to run:
+# python3 -m pip install -r requirements.txt
+# python3 -m nltk.downloader punkt punkt_tab
+# python3 hw03_girishya.py
+# 
+# 
+# 
 import heapq
 import math
 from pathlib import Path
@@ -51,9 +58,9 @@ def calculate_idf(index, document_count):
 
 
 def calculate_weights(vectors, idf, method):
-    # Apply the selected weighting formula to each word count.
+    # Applying the selected weighting formula to each word count.
     if method not in ("tf", "tf_idf", "wf_idf"):
-        raise ValueError(f"Unknown weighting method: {method}")
+        raise ValueError(f"this is a Unknown weighting method: {method}")
     weighted = {}
     for name, counts in vectors.items():
         weights = {}
@@ -107,7 +114,7 @@ def get_top_k_pairs(vectors, k):
     # Keep the K highest scores, breaking ties by filename.
     pair_count = len(vectors) * (len(vectors) - 1) // 2
     if not 1 <= k <= pair_count:
-        raise ValueError(f"K must be between 1 and {pair_count}.")
+        raise ValueError(f"pleaseeee!!! K must be between 1 and {pair_count}.")
     return heapq.nsmallest(
         k, pair_scores(vectors), key=lambda item: (-item[0], item[1], item[2])
     )
@@ -123,7 +130,7 @@ def ask_for_k(document_count):
                 return k
         except ValueError:
             pass
-        print(f"Please enter a whole number between 1 and {maximum}.")
+        print(f"Pleaseeee!!! enter a whole number between 1 and {maximum}.")
 
 
 def print_top_terms(index):
@@ -146,11 +153,11 @@ def print_results(method, pairs):
 
 def main():
     # Build the index and run all three weighting methods.
-    print("================ CSC734 - Homework 03 ================")
+    print("================ CSC734 - Homework 03 ==================")
     print("First Name: Guillaume")
     print("Last Name : Girishya")
-    print("Git : https://github.com/GGirishya")
-    print("======================================================")
+    print("Git : https://github.com/GGirishya/Inverted_index")
+    print("========================================================")
 
     started = perf_counter()
     names, index = load_collection(DOCS_DIR)
